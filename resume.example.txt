@@ -1,0 +1,28 @@
+Alex Morgan
+Email: alex.morgan@example.com | Phone: +1-555-0199 | Location: San Francisco, CA / Remote
+LinkedIn: linkedin.com/in/alexmorgan | GitHub: github.com/alexmorgan
+
+SUMMARY
+Software Engineer with 4+ years of experience building scalable backend services, RESTful APIs, and full-stack web applications. Proficient in Python, FastAPI, Django, PostgreSQL, Docker, and cloud deployments. Passionate about AI integrations and developer tooling.
+
+SKILLS
+- Languages: Python, JavaScript/TypeScript, SQL, HTML/CSS
+- Frameworks & Libraries: FastAPI, Django, Flask, React, Node.js, Pydantic, Celery
+- Databases: PostgreSQL, MySQL, Redis, SQLite, MongoDB
+- Cloud & DevOps: Docker, AWS (EC2, S3), Git, CI/CD, Linux
+- AI & LLMs: OpenAI API, Groq, LangChain, Prompt Engineering
+
+EXPERIENCE
+Software Engineer | Acme Tech Solutions (2022 - Present)
+- Designed and maintained high-throughput REST APIs using FastAPI and PostgreSQL handling 2M+ requests/day.
+- Integrated LLM-powered summarization and search features using Groq API, reducing latency by 45%.
+- Containerized microservices using Docker and implemented CI/CD pipelines via GitHub Actions.
+
+Junior Backend Developer | CloudFlow Labs (2020 - 2022)
+- Built backend services in Python (Django) and managed PostgreSQL schemas and database migrations.
+- Implemented JWT authentication, role-based access control, and asynchronous job queues using Redis and Celery.
+- Collaborated with frontend engineers to integrate responsive React components.
+
+EDUCATION
+B.S. in Computer Science | State University (Graduated 2020)
+

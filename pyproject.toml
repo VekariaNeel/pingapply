@@ -1,0 +1,22 @@
+[project]
+name = "wa-job-bot"
+version = "0.1.0"
+description = "AI-powered WhatsApp job scout that extracts job posts, scores resume fit via Groq LLM, and auto-applies with user approval."
+readme = "README.md"
+license = { text = "MIT" }
+authors = [
+    { name = "Neel Vekaria", email = "vekariyaneelpvt@gmail.com" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "groq>=1.7.0",
+    "neonize>=0.5.2",
+    "python-dotenv>=1.2.4",
+]
+
+[project.scripts]
+wa-job-bot = "main:main"
+
+[build-system]
+requires = ["uv_build>=0.12.2,<0.14.0"]
+build-backend = "uv_build"
