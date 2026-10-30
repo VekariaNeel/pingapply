@@ -1,4 +1,4 @@
-# 🤖 WA-Job-Bot
+# ⚡ PingApply
 
 > **Your Autonomous AI Job Scout on WhatsApp.**  
 > Monitors WhatsApp groups for job postings, parses requirements with Groq LLM, scores match quality against your resume, alerts you via private WhatsApp message, and dispatches your application upon your approval.
@@ -43,10 +43,13 @@ flowchart TD
 
 - 🧠 **Smart Job Extraction**: Uses ultra-fast Groq LLMs (`openai/gpt-oss-120b`, `llama-3.3-70b-versatile`, etc.) to parse unstructured group chatter into structured JSON (role, skills, location, recruiter phone, recruiter email).
 - 🎯 **Resume Match Scoring (0–100)**: Evaluates incoming job specifications against your personal `resume.txt` and generates a fit percentage and written reasoning.
-- 🔔 **Zero-Spam Human-in-the-Loop Alerts**: When a job matches with a score $\ge 50$, the bot pings your personal WhatsApp number with an approval request.
-- 🚀 **One-Word Dual-Channel Apply**:
-  - Simply reply **`yes`** in your WhatsApp chat: the bot automatically sends `resume.pdf` to the recruiter's **WhatsApp** and sends an application email via **Gmail SMTP**.
-  - Or reply **`yes <contact>`** to selectively target a single channel.
+- 🔔 **Zero-Spam Human-in-the-Loop Alerts**: When a job matches with a score $\ge 50$, the bot pings your personal WhatsApp with a short, clean daily ID (`#1`, `#2`, `#3`...).
+- 🗓️ **Automatic Daily Reset**: Job IDs reset every day at midnight so numbers stay short and clean. Daily jobs can only be applied to on the day they appeared.
+- 🚀 **Streamlined Command Dispatch (`yes <id> <wa/email/both>`)**:
+  - `yes 1 both` — sends your resume via both WhatsApp & Email.
+  - `yes 1 wa` — sends your resume strictly via WhatsApp.
+  - `yes 1 email` — sends your resume strictly via Email.
+  - Or simply `yes` / `yes 1` to default to all available contacts.
 - 💾 **Local SQLite Storage**: Deduplicates messages using message IDs and logs all jobs, scores, timestamps, and application statuses in `jobs.db`.
 - 🔒 **100% Local & Privacy-Friendly**: No third-party backend servers. All credentials, session tokens, and database files stay on your machine.
 
@@ -54,24 +57,27 @@ flowchart TD
 
 ## 💬 Interactive Approval Example
 
-When a matching opportunity is found, you receive a direct WhatsApp message from the bot:
+When matching opportunities arrive, you receive direct WhatsApp alerts numbered consecutively for the day:
 
 ```text
-Job match (78%): Full Stack Python Engineer @ Remote / Bangalore
-Contacts: Phone: +91 98765 43210 | Email: jobs@techcorp.io
+🎯 Job Match #1 (78%): Full Stack Python Engineer @ Remote / Bangalore
+• WhatsApp: +91 98765 43210
+• Email: jobs@techcorp.io
 
-• Reply "yes" to send to both (WhatsApp + Email)
-• Reply "yes <contact>" to send only to a specific one
+Reply with:
+• yes 1 both   (Send to WhatsApp + Email)
+• yes 1 wa     (WhatsApp only)
+• yes 1 email  (Email only)
 ```
 
-You reply:
+You can choose your channel simply by texting back:
 ```text
-yes
+yes 1 wa
 ```
 
 The bot immediately dispatches your resume and confirms:
 ```text
-Application sent for Full Stack Python Engineer via WhatsApp (+919876543210) & Email (jobs@techcorp.io)!
+Application sent for Job #1 (Full Stack Python Engineer) via WhatsApp (+919876543210)!
 ```
 
 ---
@@ -93,8 +99,8 @@ Application sent for Full Stack Python Engineer via WhatsApp (+919876543210) & E
 ### 2. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/wa-job-bot.git
-cd wa-job-bot
+git clone https://github.com/VekariaNeel/pingapply.git
+cd pingapply
 ```
 
 ### 3. Install Dependencies
@@ -168,6 +174,47 @@ The bot will connect to WhatsApp and log incoming job posts in real time!
 
 ---
 
+## 📧 Email Service Setup (Gmail SMTP)
+
+The bot uses Python's built-in `smtplib` over **Port 587 with STARTTLS** to send resumes to recruiter email addresses.
+
+> [!IMPORTANT]
+> **Your standard Google login password will NOT work.** Google blocks automated SMTP logins with regular passwords. You must generate a dedicated **16-character App Password**.
+
+### Step-by-Step Instructions:
+
+1. **Enable 2-Step Verification**:
+   - Go to your [Google Account Security Settings](https://myaccount.google.com/security).
+   - Ensure **2-Step Verification** is turned **ON**. (App Passwords are unavailable if 2-Step Verification is off).
+
+2. **Generate an App Password**:
+   - Open [Google App Passwords](https://myaccount.google.com/apppasswords).
+   - In the **App name** field, enter something recognizable like `PingApply`.
+   - Click **Create**.
+   - Google will show a yellow box with a **16-character password** (e.g. `juzq qyiv rdhl zpxd`).
+
+3. **Add to `.env`**:
+   - Copy the 16 characters (spaces are optional) into your `.env` file:
+     ```env
+     GMAIL_USER=your_email@gmail.com
+     GMAIL_APP_PASSWORD=juzqqyivrdhlzpxd
+     ```
+
+4. **Verify Your Connection (Optional Test)**:
+   - Run this one-line command to verify that your credentials authenticate successfully without sending an email:
+     ```powershell
+     uv run python -c "from dotenv import load_dotenv; load_dotenv(); import os, smtplib; smtp = smtplib.SMTP('smtp.gmail.com', 587, timeout=10); smtp.starttls(); smtp.login(os.environ['GMAIL_USER'], os.environ['GMAIL_APP_PASSWORD']); print('✅ Gmail SMTP connected and authenticated successfully!'); smtp.quit()"
+     ```
+
+5. **Customizing Your Email Template**:
+   - To personalize the subject line, email body text, or sign-off, open [`send.py`](send.py) and edit the `send_email` function:
+     ```python
+     msg["Subject"] = f"Application for {role_name}"
+     msg.set_content(f"Hi,\n\nI'm applying for the {role_name} role. Resume attached.\n\nThanks,\nYour Name")
+     ```
+
+---
+
 ## ⚙️ Configuration Reference
 
 | Variable | Description | Required | Example |
@@ -179,15 +226,13 @@ The bot will connect to WhatsApp and log incoming job posts in real time!
 | `GMAIL_USER` | Gmail address for sending applications | No | `candidate@gmail.com` |
 | `GMAIL_APP_PASSWORD` | Google Account 16-character App Password | No | `abcd efgh ijkl mnop` |
 
-> **How to create a Gmail App Password:**  
-> Go to **Google Account** $\rightarrow$ **Security** $\rightarrow$ **2-Step Verification** $\rightarrow$ **App Passwords** $\rightarrow$ Create one for "Mail" and copy the 16-character code into `GMAIL_APP_PASSWORD`.
 
 ---
 
 ## 📂 Project Structure
 
 ```text
-wa-job-bot/
+pingapply/
 ├── main.py              # Main orchestrator & message dispatcher
 ├── whatsapp_bot.py      # Neonize WhatsApp connection & listener
 ├── find_group.py        # Utility to list WhatsApp groups and JIDs

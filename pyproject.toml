@@ -1,5 +1,5 @@
 [project]
-name = "wa-job-bot"
+name = "pingapply"
 version = "0.1.0"
 description = "AI-powered WhatsApp job scout that extracts job posts, scores resume fit via Groq LLM, and auto-applies with user approval."
 readme = "README.md"
@@ -15,7 +15,7 @@ dependencies = [
 ]
 
 [project.scripts]
-wa-job-bot = "main:main"
+pingapply = "main:main"
 
 [build-system]
 requires = ["uv_build>=0.12.2,<0.14.0"]
